@@ -99,11 +99,11 @@ void task2() // добавить КС
     int WorkshopInWorkAmount1;
     while (true)
     {
-        std::cout << "Введите  количество цехов в работе:\n";
+        std::cout << "Введите количество цехов в работе:\n";
         std::cin >> WorkshopInWorkAmount1;
         if (0 < WorkshopInWorkAmount1 <= WorkshopAmount1)
         {
-            CS1.WorkshopAmount = WorkshopInWorkAmount1;
+            CS1.WorkshopInWorkAmount = WorkshopInWorkAmount1;
             break;
         }
         else
@@ -127,7 +127,7 @@ void task3() // просмотр всех объектов
     }
     if (is_cs)
     {
-        std::cout << "Компрессионная станция\nНазвание: " << CS1.Name << "\nКоличество цехов: " << CS1.WorkshopAmount << "\nКоличество цехов в работе: " << CS1.WorkshopInWorkAmount << "Класс станции: " << CS1.StationClass << "\n";
+        std::cout << "Компрессионная станция\nНазвание: " << CS1.Name << "\nКоличество цехов: " << CS1.WorkshopAmount << "\nКоличество цехов в работе: " << CS1.WorkshopInWorkAmount << "\nКласс станции: " << CS1.StationClass << "\n";
     }
     if (is_pipe == false and is_cs == false)
     {
@@ -263,26 +263,27 @@ void task5()
     }
 }
 
-void task6()
+void task6() // сохранить
 {
     
     std::ofstream file("data.txt");
-    if (is_pipe)
+    if (is_pipe and is_cs)
     {
-        file << "Pipe:\n";
-        file << "KilometerMarker=" << Pipe1.KilometerMarker << "\n";
-        file << "Length=" << Pipe1.Length << "\n";
-        file << "Diameter=" << Pipe1.Diameter << "\n";
-        file << "InRepair=" << Pipe1.InRepair << "\n";
-    }
+    file << "Pipe:\n";
+    file << "KilometerMarker=" << Pipe1.KilometerMarker << "\n";
+    file << "Length=" << Pipe1.Length << "\n";
+    file << "Diameter=" << Pipe1.Diameter << "\n";
+    file << "InRepair=" << Pipe1.InRepair << "\n";
 
-    if (is_cs)
+    file << "Compressor Station:" << "\n";
+    file << "Name=" << CS1.Name << "\n";
+    file << "WorkshopAmount=" << CS1.WorkshopAmount << "\n";
+    file << "WorkshopInWorkAmount=" << CS1.WorkshopInWorkAmount << "\n";
+    file << "StationClass=" << CS1.StationClass << "\n";
+    }
+    else
     {
-        file << "Compressor Station:" << "\n";
-        file << "Name=" << CS1.Name << "\n";
-        file << "WorkshopAmount=" << CS1.WorkshopAmount << "\n";
-        file << "WorkshopInWorkAmount=" << CS1.WorkshopInWorkAmount << "\n";
-        file << "StationClass=" << CS1.StationClass << "\n";
+        std::cout << "Сначала введите/загрузите данные.\n";
     }
 }
 
@@ -326,7 +327,7 @@ int main()
 {   
     setlocale(LC_ALL, "Russian");
     std::string task = "-1";
-    while (task != "0")
+    while (true)
     {   
         std::cout << "\n-----------------------------------------------\n"
                   << "1. Добавить трубу 2. Добавить КС \n"
@@ -362,20 +363,14 @@ int main()
         {
             task7();
         }
+        else if (task == "0")
+        {
+            std::cout << "Выход...";
+            break;
+        }
         else
         {
             std::cout << "Введите корректную комманду.\n";
         }
     }   
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
