@@ -18,49 +18,40 @@ struct Compressor_Station
     std::string Name;
     int WorkshopAmount;
     int WorkshopInWorkAmount;
-    std::string StationClass;
+    char StationClass;
 
 };
 
 
-Pipe Pipe1;
-Compressor_Station CS1;
+Pipe New_Pipe;
+Compressor_Station New_CS;
 bool is_pipe = false;
 bool is_cs = false;
+int pipe_amount = 1;
+int cs_amount = 1;
 
 
-void task1() // добавить трубу
+void AddPipe() // добавить трубу
 {
-    is_pipe = true;
-    std::string KilometerMarker1;
     std::cout << "Добавление трубы...\nВведите километровый маркер: \n";
-    std::cin >> KilometerMarker1;
-    Pipe1.KilometerMarker = KilometerMarker1;
+    std::cin >> New_Pipe.KilometerMarker;//!!!!!!!
 
-    float Length1;
     while (true)
     {
         std::cout << "Введите длину трубы (км):\n";
-        std::cin >> Length1;
-        if (Length1 > 0)
-        {
-            Pipe1.Length = Length1;
+        std::cin >> New_Pipe.Length;
+        if (New_Pipe.Length > 0)
             break;
-        }
         else
-        {
             std::cout << "Некорректное значение. \n";
-        }
     }
 
-    int Diameter1;
     while (true)
     {
         std::cout << "Введите  диаметр трубы (мм):\n";
-        std::cin >> Diameter1;
-        if (Diameter1 > 0)
+        std::cin >> New_Pipe.Diameter;
+        if (New_Pipe.Diameter > 0)
         {
-            Pipe1.Diameter = Diameter1;
             break;
         }
         else
@@ -69,25 +60,24 @@ void task1() // добавить трубу
         }
     }
 
-    Pipe1.InRepair = false;
+    New_Pipe.InRepair = false;
+    is_pipe = true;
 }
 
-void task2() // добавить КС
+void AddCS() // добавить КС
 {
     std::string Name1;
     std::cout << "Добавление КС...\nВведите название: \n";
     std::cin >> Name1;
-    CS1.Name = Name1;
+    New_CS.Name = Name1;
     is_cs = true;
 
-    int WorkshopAmount1;
     while (true)
     {
         std::cout << "Введите  количество цехов:\n";
-        std::cin >> WorkshopAmount1;
-        if (WorkshopAmount1 > 0)
+        std::cin >> New_CS.WorkshopAmount;
+        if (New_CS.WorkshopAmount > 0)
         {
-            CS1.WorkshopAmount = WorkshopAmount1;
             break;
         }
         else
@@ -96,14 +86,12 @@ void task2() // добавить КС
         }
     }
 
-    int WorkshopInWorkAmount1;
     while (true)
     {
         std::cout << "Введите количество цехов в работе:\n";
-        std::cin >> WorkshopInWorkAmount1;
-        if (0 < WorkshopInWorkAmount1 <= WorkshopAmount1)
+        std::cin >> New_CS.WorkshopInWorkAmount;
+        if (0 < New_CS.WorkshopInWorkAmount <= New_CS.WorkshopAmount)
         {
-            CS1.WorkshopInWorkAmount = WorkshopInWorkAmount1;
             break;
         }
         else
@@ -111,216 +99,207 @@ void task2() // добавить КС
             std::cout << "Некорректное значение. \n";
         }
     }
-    std::string StationClass1;
     std::cout << "Введите класс КС: \n";
-    std::cin >> StationClass1;
-    CS1.StationClass = StationClass1;
-
+    std::cin >> New_CS.StationClass;
 }
 
-void task3() // просмотр всех объектов
+void ShowAll() // просмотр всех объектов
 {
     std::cout << "Просмотр  всех объектов:\n";
     if (is_pipe)
     {
-        std::cout << "Труба\nКилометровый маркер: " << Pipe1.KilometerMarker << "\nДлина (км): " << Pipe1.Length << "\nДиаметр (мм): " << Pipe1.Diameter << "\nВ ремонте (1 - да, 0 - нет): " << int(Pipe1.InRepair) << "\n";
+        std::cout << "Труба\nКилометровый маркер: " << New_Pipe.KilometerMarker << "\nДлина (км): " << New_Pipe.Length << "\nДиаметр (мм): " << New_Pipe.Diameter << "\nВ ремонте (1 - да, 0 - нет): " << New_Pipe.InRepair << "\n";
     }
     if (is_cs)
     {
-        std::cout << "Компрессионная станция\nНазвание: " << CS1.Name << "\nКоличество цехов: " << CS1.WorkshopAmount << "\nКоличество цехов в работе: " << CS1.WorkshopInWorkAmount << "\nКласс станции: " << CS1.StationClass << "\n";
+        std::cout << "Компрессионная станция\nНазвание: " << New_CS.Name << "\nКоличество цехов: " << New_CS.WorkshopAmount << "\nКоличество цехов в работе: " << New_CS.WorkshopInWorkAmount << "\nКласс станции: " << New_CS.StationClass << "\n";
     }
-    if (is_pipe == false and is_cs == false)
+    if (!is_pipe && !is_cs)
     {
         std::cout << "Объектов нет!\n";
     }
 }
 
-void task4() // редактировать трубу
+void RedactPipe() // редактировать трубу
 {
     if (is_pipe == false)
     { 
         std::cout << "Труб нет.\n";
         return; 
     }
-    std::cout << "Редактирование трубы. Выберите параметр:\n1 - километровый маркер; 2 - длина;\n3 - диаметр; 4 - состояние в ремонте:\n";
-    int redactpipe = 0;
-    std::cin >> redactpipe;
-    if (redactpipe == 1)
-    {
-        std::cout << "Введите новый километровый маркер: \n";
-        std::cin >> Pipe1.KilometerMarker;
-    }
-    else if (redactpipe == 2)
-    {
-        float Length1;
-        while (true)
+    std::cout << "Редактирование трубы. Состояние трубы в данный момент (1 - в ремонте; 0 - нет): " << New_Pipe.InRepair << "\n";
+
+    while (true)
+    {   
+        std::cout << "Введите состояние трубы: (1 - в ремонте; 0 - нет): \n";
+        std::cin >> New_Pipe.InRepair;
+        if (New_Pipe.InRepair == 0 or New_Pipe.InRepair == 1)
         {
-            std::cout << "Введите новую длину трубы (км):\n";
-            std::cin >> Length1;
-            if (Length1 > 0)
-            {
-                Pipe1.Length = Length1;
-                break;
-            }
-            else
-            {
-                std::cout << "Некорректное значение. \n";
-            }
+            break;
         }
-    }
-    else if (redactpipe == 3)
-    {
-        int Diameter1;
-        while (true)
-        {
-            std::cout << "Введите новый диаметр трубы (мм):\n";
-            std::cin >> Diameter1;
-            if (Diameter1 > 0)
-            {
-                Pipe1.Diameter = Diameter1;
-                break;
-            }
-            else
-            {
-                std::cout << "Некорректное значение. \n";
-            }
-        }
-    }
-    else if (redactpipe == 4)
-    {
-        int inrepair = -1;
-        while (true)
-        {   
-            std::cout << "Введите состояние трубы: 1 - в ремонте 0 - не в ремонте: \n";
-            std::cin >> inrepair;
-            if (inrepair == 0 or inrepair == 1)
-            {
-                Pipe1.InRepair = inrepair;
-                break;
-            }
-            else {
-                std::cout << "\nНекорректный ввод\n";
-            }
+        else {
+            std::cout << "\nНекорректный ввод.\n";
         }
     }
 }
 
-void task5()
+void RedactCS() //редактировать КС
 {
     if (is_cs == false)
     {
         std::cout << "КС нет.\n";
         return;
     }
-    std::cout << "Редактирование параметров КС. Выберите параметр:\n1 - название; 2 - количество цехов;\n3 - количество цехов в работе; 4 - класс станции: \n";
-    int redactcs = -1;
-    std::cin >> redactcs;
-    if (redactcs == 1)
+    std::cout << "Редактирование КС. Введите новое количество цехов в работе: \n";
+    while (true)
     {
-        std::cout << "Введите новое название КС: \n";
-        std::cin >> CS1.Name;
-    }
-    else if (redactcs == 2)
-    {
-        int WorkshopAmount1;
-        while (true)
+        std::cin >> New_CS.WorkshopInWorkAmount;
+        if (0 < New_CS.WorkshopInWorkAmount <= New_CS.WorkshopAmount)
         {
-            std::cout << "Введите новое количество цехов:\n";
-            std::cin >> WorkshopAmount1;
-            if (WorkshopAmount1 > 0)
-            {
-                CS1.WorkshopAmount = WorkshopAmount1;
-                break;
-            }
-            else
-            {
-                std::cout << "Некорректное значение. \n";
-            }
+            break;
         }
-    }
-    else if (redactcs == 3)
-    {
-        int WorkshopInWorkAmount1;
-        while (true)
+        else
         {
-            std::cout << "Введите новое количество цехов в работе:\n";
-            std::cin >> WorkshopInWorkAmount1;
-            if (0 < WorkshopInWorkAmount1 <= CS1.WorkshopAmount)
-            {
-                CS1.WorkshopAmount = WorkshopInWorkAmount1;
-                break;
-            }
-            else
-            {
-                std::cout << "Некорректное значение. \n";
-            }
+            std::cout << "Некорректное значение. Введите новое количество цехов в работе:\n";
         }
-    }
-    else if (redactcs == 4)
-    {
-        std::cout << "Введите новый класс КС: \n";
-        std::cin >> CS1.StationClass;
     }
 }
 
-void task6() // сохранить
-{
-    
-    std::ofstream file("data.txt");
-    if (is_pipe and is_cs)
-    {
-    file << "Pipe:\n";
-    file << "KilometerMarker=" << Pipe1.KilometerMarker << "\n";
-    file << "Length=" << Pipe1.Length << "\n";
-    file << "Diameter=" << Pipe1.Diameter << "\n";
-    file << "InRepair=" << Pipe1.InRepair << "\n";
+void Save() // сохранить
+{   
+    std::cout << "1 - сохранить трубу; 2 - сохранить КС; 3 - сохранить всё: \n";
+    std::string task;
+    std::cin >> task;
+    if (task == "1" && is_pipe)
+    {   
 
-    file << "Compressor Station:" << "\n";
-    file << "Name=" << CS1.Name << "\n";
-    file << "WorkshopAmount=" << CS1.WorkshopAmount << "\n";
-    file << "WorkshopInWorkAmount=" << CS1.WorkshopInWorkAmount << "\n";
-    file << "StationClass=" << CS1.StationClass << "\n";
+        std::ofstream file("data.txt");
+        pipe_amount = 1;
+        cs_amount = 0;
+        file << "1\n0\n";
+        file << New_Pipe.KilometerMarker << "\n";
+        file << New_Pipe.Length << "\n";
+        file << New_Pipe.Diameter << "\n";
+        file << New_Pipe.InRepair << "\n";
+    }
+    
+    else if (task == "2" && is_cs)
+    {
+        std::ofstream file("data.txt");
+        pipe_amount = 0;
+        cs_amount = 1;
+        file << "0\n1\n";
+        file << New_CS.Name << "\n";
+        file << New_CS.WorkshopAmount << "\n";
+        file << New_CS.WorkshopInWorkAmount << "\n";
+        file << New_CS.StationClass << "\n";
+    }
+    else if (task == "3" && is_pipe && is_cs)
+    {
+        std::ofstream file("data.txt");
+        pipe_amount = 1;
+        cs_amount = 1;
+        file << "1\n1\n";
+        file << New_Pipe.KilometerMarker << "\n";
+        file << New_Pipe.Length << "\n";
+        file << New_Pipe.Diameter << "\n";
+        file << New_Pipe.InRepair << "\n";
+        file << New_CS.Name << "\n";
+        file << New_CS.WorkshopAmount << "\n";
+        file << New_CS.WorkshopInWorkAmount << "\n";
+        file << New_CS.StationClass << "\n";
     }
     else
     {
-        std::cout << "Сначала введите/загрузите данные.\n";
+        std::cout << "Некорректный ввод/нет данных.\n";
     }
 }
 
-void task7() // загрузить
+void Load() // загрузить
 {
-    is_cs = true;
-    is_pipe = true;
-    std::string filename = "data.txt";
-    std::ifstream file(filename);
+    while (true)
+    {
+       // std::cout << "1 - загрузить трубу; 2 - загрузить КС, 3 - загрузить всё:\n";
+        std::string task;
+        std::cin >> task;
+        if (task == "1" && pipe_amount == 1)
+        {
+            is_pipe = true;
+            std::string filename = "data.txt";
+            std::ifstream file(filename);
 
-    std::vector<std::string> lines;
-    std::string line;
+            std::vector<std::string> lines;
+            std::string line;
 
-    while (std::getline(file, line)) {
-        lines.push_back(line);
+            while (std::getline(file, line)) {
+                lines.push_back(line);
+            }
+
+            file.close();
+
+            New_Pipe.KilometerMarker = lines[2];
+            New_Pipe.Length = std::stof(lines[3]);
+            New_Pipe.Diameter = std::stoi(lines[4]);
+            New_Pipe.InRepair = std::stoi(lines[5]);
+            std::cout << "Данные загружены.\n";
+            break;
+        }
+        else if (task == "2" && cs_amount == 1)
+        {
+            is_cs = true;
+            std::string filename = "data.txt";
+            std::ifstream file(filename);
+
+            std::vector<std::string> lines;
+            std::string line;
+
+            while (std::getline(file, line)) {
+                lines.push_back(line);
+            }
+
+            file.close();
+
+            New_CS.Name = lines[6];
+            New_CS.WorkshopAmount = std::stoi(lines[7]);
+            New_CS.WorkshopInWorkAmount = std::stoi(lines[8]);
+            New_CS.StationClass = lines[9][0];
+            std::cout << "Данные загружены.\n";
+            break;
+        }
+        else if (task == "3" && cs_amount == 1 && pipe_amount == 1)
+        {
+            is_pipe = true;
+            is_cs = true;
+            std::string filename = "data.txt";
+            std::ifstream file(filename);
+
+            std::vector<std::string> lines;
+            std::string line;
+
+            while (std::getline(file, line)) {
+                lines.push_back(line);
+            }
+
+            file.close();
+
+            New_Pipe.KilometerMarker = lines[2];
+            New_Pipe.Length = std::stof(lines[3]);
+            New_Pipe.Diameter = std::stoi(lines[4]);
+            New_Pipe.InRepair = std::stoi(lines[5]);
+            New_CS.Name = lines[6];
+            New_CS.WorkshopAmount = std::stoi(lines[7]);
+            New_CS.WorkshopInWorkAmount = std::stoi(lines[8]);
+            New_CS.StationClass = lines[9][0];
+            std::cout << "Данные загружены.\n";
+            break;
+        }
+        else
+        {
+            std::cout << "Некорректный ввод.\n";
+        }
     }
-    
-    file.close();
 
-    Pipe1.KilometerMarker = lines[1].substr(lines[1].find("=") + 1);
-    std::cout << "Загрузка...\nТруба\nКилометровая метка: " << Pipe1.KilometerMarker << "\n";
-    Pipe1.Length = std::stof(lines[2].substr(lines[2].find("=") + 1));
-    std::cout << "Длина: " << Pipe1.Length << "\n";
-    Pipe1.Diameter = std::stoi(lines[3].substr(lines[3].find("=") + 1));
-    std::cout << "Диаметр: " << Pipe1.Diameter << "\n";
-    Pipe1.InRepair = std::stoi(lines[4].substr(lines[4].find("=") + 1));
-    std::cout << "В ремонте (1 - да, 0 - нет): " << Pipe1.InRepair << "\n";
 
-    CS1.Name = lines[6].substr(lines[6].find("=") + 1);
-    std::cout << "Компрессионная Станция\nНазвание: " << CS1.Name << "\n";
-    CS1.WorkshopAmount = std::stoi(lines[7].substr(lines[7].find("=") + 1));
-    std::cout << "Количество цехов: " << CS1.WorkshopAmount << "\n";
-    CS1.WorkshopInWorkAmount = std::stoi(lines[8].substr(lines[8].find("=") + 1));
-    std::cout << "Количество цехов в работе: " << CS1.WorkshopInWorkAmount << "\n";
-    CS1.StationClass = lines[9].substr(lines[9].find("=") + 1);
-    std::cout << "Класс Станции: " << CS1.StationClass << "\n";
-    std::cout << "Дата загружена.\n";
 }
 
 int main()
@@ -337,36 +316,36 @@ int main()
         std::cin >> task;
         if (task == "1")
         {
-            task1();
+            AddPipe();
         }
         else if (task == "2")
         {
-            task2();
+            AddCS();
         }
         else if (task == "3")
         {
-            task3();
+            ShowAll();
         }
         else if (task == "4")
         {
-            task4();
+            RedactPipe();
         }
         else if (task == "5")
         {
-            task5();
+            RedactCS();
         }
         else if (task == "6")
         {
-            task6();
+            Save();
         }
         else if (task == "7")
         {
-            task7();
+            Load();
         }
         else if (task == "0")
         {
             std::cout << "Выход...";
-            break;
+            return 0;
         }
         else
         {
