@@ -69,7 +69,9 @@ void AddPipe(Pipe& Object) // добавить трубу
             break;
         }
         else
+        {
             std::cout << "Некорректное значение. \n";
+        }
     }
 
     while (true)
@@ -261,39 +263,82 @@ void Save(Pipe& PipeObject, Compressing_Station& CSObject, bool is_pipe, bool is
 }
 
 
-void LoadPipe(Pipe& PipeObject, std::ifstream &file)
+int LoadPipe(Pipe& PipeObject, std::ifstream &file)
 {
     std::string line = "";
     std::getline(file, line);
     PipeObject.KilometerMarker = line;
 
     std::getline(file, line);
-    PipeObject.Length = std::stof(line);
+    if (is_float(line))
+    {
+        PipeObject.Length = std::stof(line);
+    }
+    else
+    {
+        std::cout << "Битый файл.";
+        return 1;
+    }
 
     std::getline(file, line);
-    PipeObject.Diameter = std::stoi(line);
+    if (is_int(line))
+    {
+        PipeObject.Diameter = std::stoi(line);
+    }
+    else
+    {
+        std::cout << "Битый файл.";
+        return 1;
+    }
 
     std::getline(file, line);
-    PipeObject.InRepair = std::stoi(line);
-
+    if (is_int(line))
+    {
+        PipeObject.InRepair = std::stoi(line);
+    }
+    else
+    {
+        std::cout << "Битый файл.";
+        return 1;
+    }
+    std::cout << "Данные трубы загружены.\n";
+    return 0;
 }
 
-void LoadCS(Compressing_Station& CSObject, std::ifstream &file)
+int LoadCS(Compressing_Station& CSObject, std::ifstream &file)
 {
     std::string line = "";
     std::getline(file, line);
     CSObject.Name = line;
 
     std::getline(file, line);
-    CSObject.WorkshopAmount = std::stoi(line);
+    if (is_int(line))
+    {
+        CSObject.WorkshopAmount = std::stoi(line);
+    }
+    else
+    {
+        std::cout << "Битый файл.";
+        return 1;
+    }
 
- 
     std::getline(file, line);
-    CSObject.WorkshopAmount = std::stoi(line);
+    if (is_int(line))
+    {
+        CSObject.WorkshopAmount = std::stoi(line);
+    }
+    else
+    {
+        std::cout << "Битый файл.";
+        return 1;
+    }
 
     std::getline(file, line);
     CSObject.StationClass = line[0];
     file.close();
+
+    std::cout << "Данные КС загружены.\n";
+    return 0;
 }
 
 void Load(Pipe& PipeObject, Compressing_Station& CSObject, bool& is_pipe, bool& is_cs) // загрузить
@@ -310,24 +355,12 @@ void Load(Pipe& PipeObject, Compressing_Station& CSObject, bool& is_pipe, bool& 
     is_cs = line == "1";
 
     if (is_pipe)
-    {
         LoadPipe(PipeObject, file);
-        std::cout << "Данные загружены.\n";
-
-        if (is_cs)
-        {
-            LoadCS(CSObject, file);
-            std::cout << "Данные КС загружены.\n";
-        }
-    }
-    else if (is_cs)
-    {
+    else { std::cout << "Трубы нет."; }
+    if (is_cs)
         LoadCS(CSObject, file);
-        std::cout << "Данные трубы загружены.\n";
-    }
+    else { std::cout << "КС нет."; }
 
-    else
-    { std::cout << "В файле нет данных.\n";}
     file.close();
 }
 
