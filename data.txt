@@ -1,10 +1,10 @@
-Pipe:
-KilometerMarker=55f
-Length=45
-Diameter=33
-InRepair=0
-Compressor Station:
-Name=g6d
-WorkshopAmount=4
-WorkshopInWorkAmount=0
-StationClass=6k7
+1
+1
+1
+2
+3
+0
+67
+67
+67
+6

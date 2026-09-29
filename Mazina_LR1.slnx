@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Mazina_LR1.vcxproj" />
+  <Project Path="Mazina_LR1.vcxproj" Id="737c3187-8a5e-4ce5-a1a9-f43a67f4a368" />
 </Solution>
