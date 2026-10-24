@@ -1,0 +1,32 @@
+1
+pipe
+k
+4
+3
+3
+-----------------------------------------------
+1. Add a Pipe 2. Add a CS 
+3. Print all objects 4. Edit/delete object(s)
+5. Save to a file 6. Load from a file
+0. Exit
+1
+Enter Pipe's name: 
+pip
+Enter Pipe's kilometer marker: 
+a
+Enter Pipe's length: 
+45
+Enter Pipe's diameter: 
+f -incorrect input
+33
+-----------------------------------------------
+1. Add a Pipe 2. Add a CS 
+3. Print all objects 4. Edit/delete object(s)
+5. Save to a file 6. Load from a file
+0. Exit
+3
+-----------------------------------------------
+1. Add a Pipe 2. Add a CS 
+3. Print all objects 4. Edit/delete object(s)
+5. Save to a file 6. Load from a file
+0. Exit

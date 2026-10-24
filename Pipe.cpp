@@ -39,10 +39,8 @@ std::istream& operator >> (std::istream& in, Pipe& p)
 	p.name = name;
 	std::string marker = GetString("Enter Pipe's kilometer marker: ");
 	p.km_marker = marker;
-	std::cout << "Enter Pipe's length: ";
-	p.length = GetCorrectNumber(0, 10000);
-	std::cout << "Enter Pipe's diameter: ";
-	p.diameter = GetCorrectNumber(0, 10000);
+	p.length = GetCorrectNumber(0, 10000, "Enter Pipe's length: ");
+	p.diameter = GetCorrectNumber(0, 10000, "Enter Pipe's diameter: ");
 	p.in_repair = false;
 	return in;
 }

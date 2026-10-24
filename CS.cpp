@@ -35,17 +35,14 @@ int CS::GetWorkshopWorkingAmount() const {
 
 void CS::RedactCS()
 {
-	cout << "Enter the amount of workshops in work:\n";
-	workshop_working_amount = GetCorrectNumber(1, workshop_amount);
+	workshop_working_amount = GetCorrectNumber(1, workshop_amount, "Enter the amount of workshops in work:");
 }
 
 std::istream& operator >> (std::istream& in, CS& cs)
 {
 	cs.name = GetString("Enter CS's name: ");
-	std::cout << "Enter workshop amount: ";
-	cs.workshop_amount = GetCorrectNumber(0, 10000);
-	std::cout << "Enter amount of worshops in work: ";
-	cs.workshop_working_amount = GetCorrectNumber(0, cs.workshop_amount);
+	cs.workshop_amount = GetCorrectNumber(0, 10000, "Enter workshop amount: ");
+	cs.workshop_working_amount = GetCorrectNumber(0, cs.workshop_amount, "Enter amount of worshops in work: ");
 	cs.station_class = GetString("Enter CS's station class: ");
 	return in;
 }

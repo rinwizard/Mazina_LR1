@@ -11,22 +11,7 @@
 
 using namespace std;
 
-// поиск по фильтрам
 
-//template<class T, typename T_param>
-//using Filter = bool(*)(const T& s, T_param param);
-//id GetId(const unordered_map<T, int>& group, string name)
-//{
-//    int i = 0;
-//    for (auto& s : group)
-//    {
-//        if (s.GetName() == name)
-//            res.push_back(i);
-//        i++;
-//    }
-//
-//    return res;
-//}
 template<class T, typename T_param>
 using Filter = bool(*)(const T& s, T_param param);
 
@@ -80,11 +65,9 @@ void ShowAll(unordered_map<int, Pipe> pipes, unordered_map<int, CS> css) // пр
 
 int RedactPipes(unordered_map<int, Pipe>& m) { //редактировать трубы
     int task;
-    cout << "\nEdit Pipe(s) - 1, Delete Pipe(s) - 2\n";
-    task = GetCorrectNumber(1, 2);
+    task = GetCorrectNumber(1, 2, "Edit Pipe(s) - 1, Delete Pipe(s) - 2");
     if (task == 1) {
-        cout << "Edit one Pipe - 1, multiple Pipes - 2; (0 - exit)\n";
-        task = GetCorrectNumber(0, 2);
+        task = GetCorrectNumber(0, 3, "Edit one Pipe - 1, multiple Pipes - 2; all Pipes - 3 (0 - exit)");
         if (task == 0) { return 0; }
         else if (task == 1)
         {
@@ -100,17 +83,24 @@ int RedactPipes(unordered_map<int, Pipe>& m) { //редактировать тр
             }
         }
         else if (task == 2) {
-            cout << "\nEnter Pipes' status: 1 - in repair, 0 - not: ";
-            bool is_in_repair = GetCorrectNumber(false, true);
+            bool is_in_repair = GetCorrectNumber(false, true, "Enter Pipes' status: 1 - in repair, 0 - not: ");
             for (int i : FindObjByFilter(m, CheckByStatus, is_in_repair)) {
+                m[i].RedactPipe();
+                cout << "\nStatus of a Pipe named " << m[i].GetName() << " was changed to " << m[i].GetStatus() << "\n";
+            }
+        }
+        else
+        {
+            cout << "Editing all Pipes' statuses....\n";
+            for (int i=0; i<=Pipe::MaxID; i++)
+            {
                 m[i].RedactPipe();
                 cout << "\nStatus of a Pipe named " << m[i].GetName() << " was changed to " << m[i].GetStatus() << "\n";
             }
         }
     }
     else {
-        cout << "Delete one Pipe - 1, multiple Pipes - 2; (0 - exit)\n";
-        task = GetCorrectNumber(0, 2);
+        task = GetCorrectNumber(0, 2, "Delete one Pipe - 1, multiple Pipes - 2; 3 - all Pipes (0 - exit)");
         if (task == 0) { return 0; }
         if (task == 1)
         {
@@ -121,9 +111,17 @@ int RedactPipes(unordered_map<int, Pipe>& m) { //редактировать тр
             }
         }
         else if (task == 2) {
-            cout << "\nEnter status: 1 - in_repair, 0 - not: ";
-            bool is_in_repair = GetCorrectNumber(false, true);
+            bool is_in_repair = GetCorrectNumber(false, true, "Enter status: 1 - in_repair, 0 - not: ");
             for (int i : FindObjByFilter(m, CheckByStatus, is_in_repair)) {
+                cout << "Pipe named " << m[i].GetName() << " deleted.\n";
+                m.erase(i);
+            }
+        }
+        else
+        {
+            cout << "Deleting all Pipes...\n";
+            for (int i = 0; i <= Pipe::MaxID; i++)
+            {
                 cout << "Pipe named " << m[i].GetName() << " deleted.\n";
                 m.erase(i);
             }
@@ -135,11 +133,9 @@ int RedactPipes(unordered_map<int, Pipe>& m) { //редактировать тр
 
 int RedactCSs(unordered_map<int, CS>& cs) { //редактировать трубы
     int task;
-    cout << "\nEdit CS(s) - 1, Delete CS(s) - 2\n";
-    task = GetCorrectNumber(1, 2);
+    task = GetCorrectNumber(1, 2, "Edit CS(s) - 1, Delete CS(s) - 2");
     if (task == 1) {
-        cout << "Edit one CS - 1, multiple CSs - 2; (0 - exit)\n";
-        task = GetCorrectNumber(0, 2);
+        task = GetCorrectNumber(0, 2, "Edit one CS - 1, multiple CSs - 2; all CSs - 3 (0 - exit)");
         if (task == 0) { return 0; }
         else if (task == 1)
         {
@@ -155,17 +151,23 @@ int RedactCSs(unordered_map<int, CS>& cs) { //редактировать тру�
             }
         }
         else if (task == 2) {
-            cout << "\nEnter percent of workstations in work: ";
-            int percent = GetCorrectNumber(0, 10000);
+            int percent = GetCorrectNumber(0, 10000, "Enter percent of workstations in work: ");
             for (int i : FindObjByFilter(cs, CheckByWorkingWorkshopsPercent, percent)) {
                 cs[i].RedactCS();
-                cout << "\nStatus of a Pipe named " << cs[i].GetName() << " was changed to " << cs[i].GetWorkshopWorkingPercent() << "\n";
+                cout << "\nCS named " << cs[i].GetName() << " had its workshops in work amount changed to " << cs[i].GetWorkshopWorkingAmount() << "\n";
+            }
+        }
+        else
+        {
+            for (int i = 0; i <= CS::MaxID; i++)
+            {
+                cs[i].RedactCS();
+                cout << "\nCS named " << cs[i].GetName() << " had its workshops in work amount changed to " << cs[i].GetWorkshopWorkingAmount() << "\n";
             }
         }
     }
     else {
-        cout << "Delete one - 1, multiple - 2; (0 - exit)\n";
-        task = GetCorrectNumber(0, 2);
+        task = GetCorrectNumber(0, 2, "Delete one - 1, multiple - 2; 3 - all CSs (0 - exit)");
         if (task == 0) { return 0; }
         if (task == 1)
         {
@@ -176,12 +178,21 @@ int RedactCSs(unordered_map<int, CS>& cs) { //редактировать тру�
             }
         }
         else if (task == 2) {
-            cout << "\nEnter percent of workstations in work: ";
-            int percent = GetCorrectNumber(false, true);
+            int percent = GetCorrectNumber(false, true, "Enter percent of workstations in work: ");
             for (int i : FindObjByFilter(cs, CheckByWorkingWorkshopsPercent, percent)) {
                 cout << "CS named " << cs[i].GetName() << " deleted.\n";
                 cs.erase(i);
             }
+        }
+        else
+        {
+            cout << "Deleting all CSs....\n";
+            for (int i = 0; i <= CS::MaxID; i++)
+            {
+                cout << "CS named " << cs[i].GetName() << " deleted.\n";
+                cs.erase(i);
+            }
+
         }
     }
 }
@@ -230,146 +241,6 @@ void Save(ofstream& fout, const unordered_map<int, Pipe>& pipes, const unordered
     fout << CS::MaxID << endl;
 }
 
-//
-//void SavePipe(Pipe& PipeObject, ofstream &file)
-//{
-//    file << PipeObject.KilometerMarker << "\n";
-//    file << PipeObject.Length << "\n";
-//    file << PipeObject.Diameter << "\n";
-//    file << PipeObject.InRepair << "\n";
-//}
-//
-//void SaveCS(Compressing_Station& CSObject, ofstream &file)
-//{
-//    file << CSObject.Name << "\n";
-//    file << CSObject.WorkshopAmount << "\n";
-//    file << CSObject.WorkshopInWorkAmount << "\n";
-//    file << CSObject.StationClass << "\n";
-////}
-//
-//void Save(Pipe& PipeObject, Compressing_Station& CSObject, bool is_pipe, bool is_cs) // сохранить
-//{
-//    ofstream file("data.txt");
-//    file << is_pipe << "\n";
-//    file << is_cs << "\n";
-//    if (is_pipe)
-//    {
-//        SavePipe(PipeObject, file);
-//        cout << "Труба сохранена.\n";
-//    }
-//    if (is_cs)
-//    {
-//        SaveCS(CSObject, file);
-//        cout << "КС сохранена.\n";
-//    }
-//    else
-//    {
-//        cout << "нет данных.\n";
-//    }
-//    file.close();
-//}
-//
-//
-//int LoadPipe(Pipe& PipeObject, ifstream &file)
-//{
-//    string line = "";
-//    getline(file, line);
-//    PipeObject.KilometerMarker = line;
-//
-//    getline(file, line);
-//    if (is_float(line))
-//    {
-//        PipeObject.Length = stof(line);
-//    }
-//    else
-//    {
-//        cout << "Битый файл.";
-//        return 1;
-//    }
-//
-//    getline(file, line);
-//    if (is_int(line))
-//    {
-//        PipeObject.Diameter = stoi(line);
-//    }
-//    else
-//    {
-//        cout << "Битый файл.";
-//        return 1;
-//    }
-//
-//    getline(file, line);
-//    if (is_int(line))
-//    {
-//        PipeObject.InRepair = stoi(line);
-//    }
-//    else
-//    {
-//        cout << "Битый файл.";
-//        return 1;
-//    }
-//    cout << "Данные трубы загружены.\n";
-//    return 0;
-//}
-//
-//int LoadCS(Compressing_Station& CSObject, ifstream &file)
-//{
-//    string line = "";
-//    getline(file, line);
-//    CSObject.Name = line;
-//
-//    getline(file, line);
-//    if (is_int(line))
-//    {
-//        CSObject.WorkshopAmount = stoi(line);
-//    }
-//    else
-//    {
-//        cout << "Битый файл.";
-//        return 1;
-//    }
-//
-//    getline(file, line);
-//    if (is_int(line))
-//    {
-//        CSObject.WorkshopAmount = stoi(line);
-//    }
-//    else
-//    {
-//        cout << "Битый файл.";
-//        return 1;
-//    }
-//
-//    getline(file, line);
-//    CSObject.StationClass = line[0];
-//    file.close();
-//
-//    cout << "Данные КС загружены.\n";
-//    return 0;
-//}
-//
-//void Load(Pipe& PipeObject, Compressing_Station& CSObject, bool& is_pipe, bool& is_cs) // загрузить
-//{
-//    string filename = "data.txt";
-//    ifstream file(filename);
-//
-//    string line;
-//
-//    getline(file, line);
-//    is_pipe = line == "1";
-//    
-//    getline(file, line);
-//    is_cs = line == "1";
-//
-//    if (is_pipe)
-//        LoadPipe(PipeObject, file);
-//    else { cout << "Трубы нет."; }
-//    if (is_cs)
-//        LoadCS(CSObject, file);
-//    else { cout << "КС нет."; }
-//
-//    file.close();
-//}
 
 int main()
 {
@@ -377,13 +248,7 @@ int main()
     unordered_map<int, CS> CSs;
 
     while (true) {
-        std::cout << "\n-----------------------------------------------\n"
-            << "1. Add a Pipe 2. Add a CS \n"
-            << "3. Print all objects 4. Edit/delete object(s) \n"
-            << "5. Save to a file 6. Load from a file\n"
-            << "0. Exit \n" << std::endl;
-
-        int task = GetCorrectNumber(0, 7);
+        int task = GetCorrectNumber(0, 7, "-----------------------------------------------\n1. Add a Pipe 2. Add a CS \n3. Print all objects 4. Edit/delete object(s)\n5. Save to a file 6. Load from a file\n0. Exit");
         switch (task)
         {
         case 0: { //выход
@@ -407,8 +272,7 @@ int main()
             break;
         }
         case 4: { //редактировать/удалить объект
-            cout << "\nRedact/delete pipe - 1, CS - 2?\n";
-            int task = GetCorrectNumber(1, 2);
+            int task = GetCorrectNumber(1, 2, "Redact/delete: Pipe - 1, CS - 2");
             if (task == 1)
             {
                 RedactPipes(Pipes);
@@ -420,22 +284,34 @@ int main()
             break;
         }
         case 5: { //сохранить в файл
+            string filename = GetString("Enter filename to save (ends with .txt): ");
             ofstream fout;
-            fout.open("data.txt", ios::out);
+            fout.open(filename, ios::out);
             if (fout.is_open())
             {
                 Save(fout, Pipes, CSs);
                 fout.close();
+                cout << "\nДанные сохранены.\n";
+            }
+            else
+            {
+                cout << "\nCannot open file.\n";
             }
             break;
         }
         case 6: { //загрузить из файла
+            string filename = GetString("Enter filename to load (ends with .txt): ");
             ifstream fin;
-            fin.open("data.txt", ios::in);
+            fin.open(filename, ios::in);
             if (fin.is_open())
             {
                 Load(fin, Pipes, CSs);
                 fin.close();
+                cout << "\nДанные загружены.\n";
+            }
+            else
+            {
+                cout << "\nCannot open file.\n";
             }
             break;
         }
