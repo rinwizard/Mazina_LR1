@@ -1,20 +1,22 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 class Pipe
 {
 	int id;
 	std::string name;
-	std::string km_marker;
 	int length;
 	int diameter;
 	bool in_repair;
-public:
 	static int MaxID;
+public:
+	
 	Pipe();
-
 	int GetId() const;
+	static int GetMaxId();
+	static void SetMaxId(const std::unordered_map<int, Pipe>& pipes);
 	std::string GetName() const;
 	bool GetStatus() const;
 	friend std::istream& operator >> (std::istream& in, Pipe& p);
