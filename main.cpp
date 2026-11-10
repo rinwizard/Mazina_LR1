@@ -4,8 +4,10 @@
 #include <set>
 #include <chrono>
 #include <vector>
+#include <algorithm>
 #include <format>
 #include <unordered_map>
+#include <unordered_set>
 #include "utils.h"
 #include "Pipe.h"
 #include "CS.h"
@@ -35,28 +37,16 @@ bool CheckByWorkingWorkshopsPercent(const CS& cs, int param)
 }
 
 template<class T, typename T_param>
-vector<int> FindObjByFilter(const unordered_map<int, T>& group, Filter<T, T_param> f, T_param param)
+unordered_set<int> FindObjByFilter(const unordered_map<int, T>& group, Filter<T, T_param> f, T_param param)
 {
-    vector <int> res;
+    unordered_set<int> res;
     res.reserve(group.size());
     for (auto& s : group)
     {
         if (f(s.second, param))
-            res.push_back(s.first);//!!!!!
+            res.emplace(s.first, s.second);
     }
 
-    return res;
-}
-
-template<class T>
-vector<int> GetObjId(const unordered_map<int, T>& group)
-{
-    vector<int> res;
-    res.reserve(group.size());
-    for (auto& s : group)
-    {
-        res.push_back(s.first);//!!!
-    }
     return res;
 }
 
@@ -78,192 +68,137 @@ void ShowAll(unordered_map<int, Pipe> pipes, unordered_map<int, CS> css) // пр
 }
 
 
-int RedactPipes(unordered_map<int, Pipe>& m) { //редактировать трубы
+void RedactPipes(unordered_map<int, Pipe>& pipes) { //редактировать трубы
     int task;
-    task = GetCorrectNumber(1, 2, "Edit Pipe(s) - 1, Delete Pipe(s) - 2");
-    if (task == 1) {
-        task = GetCorrectNumber(0, 3, "Edit one Pipe - 1, multiple Pipes - 2; (0 - exit)");
-        if (task == 0) { return 0; }
-        else if (task == 1)
-        {
-            string name_input = GetString("Enter name (0 - exit): \n");
-            if (name_input == "0") {
-                return 0;
-            }
-            else {
-                for (int i : FindObjByFilter(m, CheckByName, name_input)) {
-                    m[i].RedactPipe();
-                    cout << "\nStatus of a Pipe named " << name_input << " was changed to " << m[i].GetStatus() << "\n";
-                }
-            }
-        }
-        else if (task == 2) {
-            bool is_in_repair = GetCorrectNumber(false, true, "Enter Pipes' status: 1 - in repair, 0 - not: ");
-            vector<int> new_list = FindObjByFilter(m, CheckByStatus, is_in_repair);
-            cout << "Found Pipes:" << endl;
-            for (int i : new_list)
-            {
-                cout << m[i].GetId() << "\t" << m[i].GetName() << endl;
-            }
-            int choose_amount = GetCorrectNumber(1, 2, "Edit all found Pipes - 1, edit one by ID - 2");
-            if (choose_amount == 1)
-            {
-                for (int i : new_list)
-                {
-                    m[i].RedactPipe();
-                    cout << "\nStatus of a Pipe named " << m[i].GetName() << " was changed to " << m[i].GetStatus() << "\n";
-                }
-            }
-            else
-            {
-                int id_to_redact = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id:");
-                if (m.contains(id_to_redact)) {
-                    m[id_to_redact].RedactPipe();
-                    cout << "\nStatus of a Pipe named " << m[id_to_redact].GetName() << " was changed to " << m[id_to_redact].GetStatus() << "\n";
-                }
-                else { cout << "No such id" << endl; }
-            }
-        }
-    }
-    else {
-        task = GetCorrectNumber(0, 3, "Delete one Pipe - 1, multiple Pipes - 2; (0 - exit)");
-        if (task == 0) { return 0; }
-        else if (task == 1)
-        {
-            string name_input = GetString("Enter name (0 - exit): \n");
-            if (name_input == "0") {
-                return 0;
-            }
-            else {
-                for (int i : FindObjByFilter(m, CheckByName, name_input)) {
-                    m.erase(i);
-                    cout << "a Pipe named " << name_input << " was deleted" << endl;
-                }
-            }
-        }
-        else if (task == 2) {
-            bool is_in_repair = GetCorrectNumber(false, true, "Enter Pipes' status: 1 - in repair, 0 - not: ");
-            vector<int> new_list = FindObjByFilter(m, CheckByStatus, is_in_repair);
-            cout << "Found Pipes:" << endl;
-            for (int i : new_list)
-            {
-                cout << m[i].GetId() << "\t" << m[i].GetName() << endl;
-            }
-            int choose_amount = GetCorrectNumber(1, 2, "Deleete all found Pipes - 1, delete one by ID - 2");
-            if (choose_amount == 1)
-            {
-                for (int i : new_list)
-                {
-                    cout << "Pipe named " << m[i].GetName() << " was deleted" << endl;
-                    m.erase(i);
-                }
-            }
-            else
-            {
-                int id_to_redact = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id:");
-                if (m.contains(id_to_redact)) {
-                    cout << "Pipe named " << m[id_to_redact].GetName() << " was deleted" << endl;
-                    m.erase(id_to_redact);
+    int action;
+    action = GetCorrectNumber(1, 2, "Edit Pipe(s) - 1, Delete Pipe(s) - 2 (0 -  exit)");
+    if (action == 0) 
+        return; 
 
+    task = GetCorrectNumber(0, 3, "One Pipe - 1, Multiple Pipes - 2;");
+    if (task == 1)
+    {
+        int ID_input = GetCorrectNumber(-1, Pipe::GetMaxId(), "Enter ID: \n");
+        if (pipes.contains(ID_input)) 
+            if (action == 1)
+                pipes[ID_input].RedactPipe(); 
+            else 
+                pipes.erase(ID_input); 
+        else 
+            cout << "No such ID!" << endl;
+        
+        return;
+    }
+    else if (task == 2) {
+        task = GetCorrectNumber(1, 2, "Sort by Name - 1, by Status - 2");
+        unordered_set<int> new_list;
+        if (task == 1)
+        {
+            string name = GetString("Enter name:");
+            new_list = FindObjByFilter(pipes, CheckByName, name);
+        }
+        else {
+            bool is_in_repair = GetCorrectNumber(0, 1, "Enter Pipes' status: 1 - in repair, 0 - not: "); // + by name
+            new_list = FindObjByFilter(pipes, CheckByStatus, is_in_repair);
+        }
+        cout << "Found Pipes:" << endl;
+        for (int i: new_list)
+        {
+            cout << pipes[i].GetId() << "\t" << pipes[i].GetName() << endl;
+        }
+        int choose_amount = GetCorrectNumber(1, 2, "all found Pipes - 1, by ID - 2"); //while
+        if (choose_amount == 1)
+        {
+            for (int i: new_list)
+            {
+                if (action == 1) { pipes[i].RedactPipe(); }
+                else { pipes.erase(i); }
+            }
+        }
+        else
+        {
+            while (true)
+            {
+                int ID_input = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id: (-1 - exit)");
+                if (ID_input == -1)
+                    return;
+                else if (new_list.contains(ID_input)) {
+                    if (action == 1) { pipes[ID_input].RedactPipe(); }
+                    else { pipes.erase(ID_input); }
                 }
                 else { cout << "No such id" << endl; }
             }
+            
+            
         }
     }
 }
 
 
-int RedactCSs(unordered_map<int, CS> &m) { //редактировать КС
+void RedactCSs(unordered_map<int, CS>& css) { //редактировать кс
     int task;
-    task = GetCorrectNumber(1, 2, "Edit CS(s) - 1, Delete CS(s) - 2");
-    if (task == 1) {
-        task = GetCorrectNumber(0, 3, "Edit one CS - 1, multiple CSs - 2; (0 - exit)");
-        if (task == 0) { return 0; }
-        else if (task == 1)
-        {
-            string name_input = GetString("Enter name (0 - exit): \n");
-            if (name_input == "0") {
-                return 0;
-            }
-            else {
-                for (int i : FindObjByFilter(m, CheckByName, name_input)) {
-                    m[i].RedactCS();
-                    cout << "CS named " << name_input << " had its workshop amount changed to " << m[i] << "\n";
-                }
-            }
-        }
-        else if (task == 2) {
-            int ws = GetCorrectNumber(0, 1000, "Enter CS' workshop in work percent: ");
-            vector<int> new_list = FindObjByFilter(m, CheckByWorkingWorkshopsPercent, ws);
-            cout << "Found CSs:" << endl;
-            for (int i : new_list)
-            {
-                cout << m[i].GetId() << "\t" << m[i].GetName() << endl;
-            }
-            int choose_amount = GetCorrectNumber(1, 2, "Edit all found CSs - 1, edit one by ID - 2");
-            if (choose_amount == 1)
-            {
-                for (int i : new_list)
-                {
-                    m[i].RedactCS();
-                }
-            }
+    int action;
+    action = GetCorrectNumber(1, 2, "Edit Pipe(s) - 1, Delete Pipe(s) - 2 (0 -  exit)");
+    if (action == 0)
+        return;
+
+    task = GetCorrectNumber(0, 3, "One Pipe - 1, Multiple Pipes - 2;");
+    if (task == 1)
+    {
+        int ID_input = GetCorrectNumber(-1, Pipe::GetMaxId(), "Enter ID: \n");
+        if (css.contains(ID_input))
+            if (action == 1)
+                css[ID_input].RedactCS();
             else
-            {
-                int id_to_redact = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id:");
-                if (m.contains(id_to_redact)) {
-                    m[id_to_redact].RedactCS();
-                }
-                else { cout << "No such id" << endl; }
-            }
-        }
+                css.erase(ID_input);
+        else
+            cout << "No such ID!" << endl;
+
+        return;
     }
-    else {
-        task = GetCorrectNumber(0, 3, "Delete one CS - 1, multiple CSs - 2; (0 - exit)");
-        if (task == 0) { return 0; }
-        else if (task == 1)
+    else if (task == 2) {
+        task = GetCorrectNumber(1, 2, "Sort by Name - 1, by Percent of workshops in work - 2");
+        unordered_set<int> new_list;
+        if (task == 1)
         {
-            string name_input = GetString("Enter name (0 - exit): \n");
-            if (name_input == "0") {
-                return 0;
-            }
-            else {
-                for (int i : FindObjByFilter(m, CheckByName, name_input)) {
-                    m.erase(i);
-                    cout << "a CS named " << name_input << " was deleted" << endl;
-                }
-            }
+            string name = GetString("Enter name:");
+            new_list = FindObjByFilter(css, CheckByName, name);
         }
-        else if (task == 2) {
-            int ws = GetCorrectNumber(0, 1000, "Enter CS' workshop in work percent: ");
-            vector<int> new_list = FindObjByFilter(m, CheckByWorkingWorkshopsPercent, ws);
-            cout << "Found CSs:" << endl;
+        else {
+            int percent = GetCorrectNumber(false, true, "Enter CS' workshop in work percent:");
+            new_list = FindObjByFilter(css, CheckByWorkingWorkshopsPercent, percent);
+        }
+        cout << "Found Pipes:" << endl;
+        for (int i : new_list)
+        {
+            cout << css[i].GetId() << "\t" << css[i].GetName() << endl;
+        }
+        int choose_amount = GetCorrectNumber(1, 2, "all found CSs - 1, by ID - 2"); //while
+        if (choose_amount == 1)
+        {
             for (int i : new_list)
             {
-                cout << m[i].GetId() << "\t" << m[i].GetName() << endl;
+                if (action == 1) { css[i].RedactCS(); }
+                else { css.erase(i); }
             }
-            int choose_amount = GetCorrectNumber(1, 2, "Deleete all found CSs - 1, delete one by ID - 2");
-            if (choose_amount == 1)
+        }
+        else
+        {
+            while (true)
             {
-                for (int i : new_list)
-                {
-                    cout << "CS named " << m[i].GetName() << " was deleted" << endl;
-                    m.erase(i);
-                }
-            }
-            else
-            {
-                int id_to_redact = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id:");
-                if (m.contains(id_to_redact)) {
-                    cout << "CS named " << m[id_to_redact].GetName() << " was deleted" << endl;
-                    m.erase(id_to_redact);
+                int ID_input = GetCorrectNumber(0, Pipe::GetMaxId(), "Enter id: (-1 - exit)");
+                if (ID_input == -1)
+                    return;
+                else if (css.contains(ID_input)) {
+                    if (action == 1) { css[ID_input].RedactCS(); }
+                    else { css.erase(ID_input); }
                 }
                 else { cout << "No such id" << endl; }
             }
+
         }
     }
 }
-
 
 void Load(ifstream& fin, unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& css)
 {
@@ -319,7 +254,7 @@ int main()
     unordered_map<int, CS> CSs;
 
     while (true) {
-        int task = GetCorrectNumber(0, 7, "-----------------------------------------------\n1. Add a Pipe\n2. Add a CS \n3. Print all objects \n4. Edit/delete object(s)\n5. Save to a file\n6. Load from a file\n0. Exit\n-----------------------------------------------");
+        int task = GetCorrectNumber(0, 7, "---------------------------\n|1. Add a Pipe            |\n|2. Add a CS              |\n|3. Print all objects     |\n|4. Edit/delete object(s) |\n|5. Save to a file        |\n|6. Load from a file      |\n|0. Exit                  |\n---------------------------");
         switch (task)
         {
         case 0: { //выход
